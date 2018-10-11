@@ -1,3 +1,4 @@
+*! version 3.0		<29may2018>			Andres Castaneda
 *! version 2.0		<22Dec2015>			Andres Castaneda
 *! version 1.0		<18Dec2013>			Andres Castaneda
 /*===========================================================================
@@ -8,7 +9,8 @@ Dependencies: The World Bank - LCSPP
 ---------------------------------------------------------------------------
 Creation Date: 		December 18, 2013
 Modification Date:	January 07, 2013
-					December 22, 2015
+December 22, 2015
+May 29, 2018
 version:			01
 References:	
 Output:		dotemplate.ado
@@ -17,21 +19,22 @@ Output:		dotemplate.ado
 cap program drop dotemplate
 program define dotemplate
 
-syntax , [ File(string) 						/// Name of the do-file
-           Path(string) 						/// directory path where do-file will be placed
-           TYpe(string) 						/// Type of template to create. Default 
-           AUThor(string) 						/// Author name
-           DEPend(string) 						/// institutions/s working for in the project
-           PROject(string) 						/// Objective of the do-file
-           OUTput(string) 						/// list of files produced with the do-file
-           DIRectory(string) 					/// list of files produced with the do-file
-           SECtions(string)						/// Number of sections in do-file
-           STEPs(string)						/// number of steps with sections
-           log  								/// produced log file with the same name as the do-file
-           replace								/// replace
-           ]
-  
-version 10
+syntax , [ File(string)              /// Name of the do-file
+Path(string)              /// directory path where do-file will be placed
+TYpe(string)              /// Type of template to create. Default 
+AUThor(string)            /// Author name
+DEPend(string)            /// institutions/s working for in the project
+PROject(string)           /// Objective of the do-file
+OUTput(string)            /// list of files produced with the do-file
+DIRectory(string)         /// list of files produced with the do-file
+SECtions(string)          /// Number of sections in do-file
+STEPs(string)             /// number of steps with sections
+log                       /// produced log file with the same name as the do-file
+replace                   /// replace
+ADO                       /// ado or do
+]
+
+version 12
 *================================
 * Section 1: create locals
 *===============================
@@ -41,10 +44,21 @@ version 10
 
 * type of template
 if ("`type'" == "") {
-	disp in y  "Type of template: " _n in smcl ///
-		"({ul:B}asic or {ul:C}omplete)" _request(_type)
+	disp in y  "Style of template: " _n in smcl ///
+	"({ul:B}asic or {ul:C}omplete)" _request(_type)
 	if ("`type'" == "" | regexm("`type'", "^[Cc]")) local type "complete"
 	if (regexm("`type'", "^[Bb]")) local type "basic"
+}
+
+if ("`ado'" == "") {
+	disp in y  "Format of file: " _n in smcl ///
+	"({ul:a}do-file or {ul:d}o-file)" _request(_ado)
+	if ("`ado'" == "" | regexm("`ado'", "^[Dd]")) local ado "do"
+	else if (regexm("`ado'", "^[Aa]")) local ado "ado"
+	else {
+		noi disp as err "you must pick between ado-file or do-file"
+		error
+	}
 }
 
 * Project
@@ -52,7 +66,7 @@ if ("`project'" == "") disp in y  "Objective of the project:" _request(_project)
 
 * name
 if ("`file'" == "") {
-	disp in y  "Name of do-file:" _request(_file)
+	disp in y  "Name of `ado'-file:" _request(_file)
 	if ("`file'" == "") local file "dofile1"
 }
 
@@ -66,7 +80,6 @@ if ("`author'" == "") {
 if ("`depend'" == "" & "`type'" == "complete" ) {
 	disp in y  "Institution/s working in the project:" _request(_depend)
 }
-
 
 
 * sections
@@ -83,26 +96,26 @@ if ("`steps'" == "" & "`type'" == "complete" ) {
 
 * Output
 if ("`output'" == "" & "`type'" == "complete") disp in y  ///
-	"Expected output from the do-file:" _n ///
-	"(Ex: Excel file, database, etc.)" _request(_output)
+"Expected output from the do-file:" _n ///
+"(Ex: Excel file, database, etc.)" _request(_output)
 
 
 * Path
 if ("`path'" == "") {
 	disp in y  "Directory path to place do-file" _n   ///
-		"(current directory is default):" _request(_path)
+	"(current directory is default):" _request(_path)
 	if (`"`path'"' == `""') local path = "`c(pwd)'"
 }
 
 * Directories
 if ("`directory'" == "" & "`type'" == "complete") disp in y  ///
-	"Global macros for directories paths:" _request(_directory)
+"Global macros for directories paths:" _request(_directory)
 
 
 * log
 if ("`log'" == "") {
 	disp in y  "Do you want to create a log-file in your template? Y/N" ///
-		_request(_log)
+	_request(_log)
 }
 
 
@@ -125,7 +138,7 @@ if (inlist("`log'", "log", "Y")) {						// if log file is desired
 	file write `do' `"log using "`path'/`file'.txt", replace text"' _n  
 }
 
-file write `do' `"/*"' _dup(68) `"="' _n 
+file write `do' `"/*"' _dup(50) `"="' _n 
 file write `do' `"project:"'  _col(16) `"`project'"' _n 			
 file write `do' `"Author: "'  _col(16) `"`author' "' _n  		
 *file write `do' `"Program Name: `file'.do"' _n 
@@ -133,9 +146,9 @@ file write `do' `"Author: "'  _col(16) `"`author' "' _n
 * dependencies is not a "must"
 if ("`type'" != "basic") file write `do' `"Dependencies:"' _col(16) `"`depend'"' _n  
 
-file write `do' _dup(70) `"-"' _n  
+file write `do' _dup(52) `"-"' _n  
 file write `do' `"Creation Date:"' _col(18) ///
-	`" `c(current_date)' - `c(current_time)'"' _n  
+`" `c(current_date)' - `c(current_time)'"' _n  
 * `"`: di %tdMonth_dd,_CCYY date("$S_DATE", "DMY")' "' _n  
 
 if ("`type'" != "basic") {					// No basic template
@@ -144,19 +157,24 @@ if ("`type'" != "basic") {					// No basic template
 	file write `do' `"References:"' _col(21) `" "' _n  		
 	file write `do' `"Output:"' _col(21) `"`output'"' _n 	
 }
-file write `do' _dup(68) `"="' `"*/"' _n 
+file write `do' _dup(50) `"="' `"*/"' _n 
 
 
 * 2.2 Page set up
 file write `do' `""' _n  
-file write `do' `"/*"' _dup(68) "=" _n  
+file write `do' `"/*"' _dup(50) "=" _n  
 file write `do' _col(25) `"0: Program set up"' _n  		
-file write `do' _dup(68) "=" `"*/"' _n 	
+file write `do' _dup(50) "=" `"*/"' _n 	
+
+if ("`ado'" == "ado") {
+	file write `do' `"program define `file', rclass"' _n
+	file write `do' `"syntax [], []"' _n 
+}
 
 * Directories of dta, do-files and excel files
 if ("`type'" != "basic") {
 	file write `do' `"version `c(stata_version)'"' _n  	
-	file write `do' `"drop _all"' _n  				
+	if ("`ado'" != "ado") file write `do' `"drop _all"' _n  				
 }
 
 * Create globals for each directory that will be used in the project
@@ -175,15 +193,15 @@ file write `do' `""' _n
 *2.3 Sections
 if ( "`type'" == "complete" ) {
 	foreach section of numlist 1/`sections' {
-		file write `do' `"/*"' _dup(68) "=" _n 	
-		file write `do' _col(25) `"`section': "' _n  		
-		file write `do' _dup(68) "=" `"*/"' _n 	
+		file write `do' `"/*"' _dup(50) "=" _n 	
+		file write `do' _col(15) `"`section': "' _n  		
+		file write `do' _dup(50) "=" `"*/"' _n 	
 		file write `do' `""' _n    
 		file write `do' `""' _n 
 		
 		if (`steps' > 1) {
 			foreach step of numlist 1/`steps' {
-				file write `do' `"*"' _dup(20) "-" `"`section'.`step':"'  _n  
+				file write `do' `"*"' _dup(10) "-" `"`section'.`step':"'  _n  
 				file write `do' `""' _n
 				file write `do' `""' _n 
 			}
@@ -198,6 +216,12 @@ file write `do' `""' _n
 
 * In case log file is selected
 if (inlist("`log'", "log", "Y")) file write `do' `"log close"' _n  
+
+
+if ("`ado'" == "ado") {
+	file write `do' `"end"' _n
+}
+
 
 
 * 2.4 Closing lines
@@ -224,20 +248,20 @@ if ("`type'" != "basic") {
 *===============================
 
 file close `do'
-cap confirm new file "`path'/`file'.do"
+cap confirm new file "`path'/`file'.`ado'"
 if _rc {
-	cap window stopbox rusure `"The file "`path'/`file'.do" "' ///
-		"already exists." "Do you want to replace it?"
-	if (_rc == 0) copy `dofile' "`path'/`file'.do", replace
+	cap window stopbox rusure `"The file "`path'/`file'.`ado'" "' ///
+	"already exists." "Do you want to replace it?"
+	if (_rc == 0) copy `dofile' "`path'/`file'.`ado'", replace
 	else exit
-	di as txt "Click" as smcl `"{browse `""`path'/`file'.do""': here }"' ///
-		`"to open template "`file'.do" with your default software"'
+	di as txt "Click" as smcl `"{browse `""`path'/`file'.`ado'""': here }"' ///
+	`"to open template "`file'.`ado'" with your default software"'
 }
 
 else {
-	copy `dofile' "`path'/`file'.do"
-	di as txt "Click" as smcl `"{browse `""`path'/`file'.do""': here }"' ///
-		`"to open template "`file'.do" with your default software"'
+	copy `dofile' "`path'/`file'.`ado'"
+	di as txt "Click" as smcl `"{browse `""`path'/`file'.`ado'""': here }"' ///
+	`"to open template "`file'.`ado'" with your default software"'
 }
 
 end
@@ -256,21 +280,21 @@ Version Control:
 
 
 dotemplate, project("Program to create Templates for do-file") ///
-         file(detemplate)              ///
-         author(Andres Castaneda)      ///
-         type(complete)                ///
-         depend(The World Bank-LCSPP)  ///
-         output(dotemplate.ado)        ///
-         sections(2)                   ///
-         steps(2)                      ///
-         log
+file(detemplate)              ///
+author(Andres Castaneda)      ///
+type(complete)                ///
+depend(The World Bank-LCSPP)  ///
+output(dotemplate.ado)        ///
+sections(2)                   ///
+steps(2)                      ///
+log
 
 
-    dotemplate, project("Program to create Templates for do-file") ///
-         file(detemplate)              ///
-         author(Andres Castaneda)      ///
-         type(basic)                   ///
-         sections(1)   
+dotemplate, project("Program to create Templates for do-file") ///
+file(detemplate)              ///
+author(Andres Castaneda)      ///
+type(basic)                   ///
+sections(1)   
 
 
 
