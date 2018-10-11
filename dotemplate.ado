@@ -1,4 +1,5 @@
-*! version 1.1		<Feb03-2014>			Andres Castaneda
+*! version 2.0		<22Dec2015>			Andres Castaneda
+*! version 1.0		<18Dec2013>			Andres Castaneda
 /*===========================================================================
 Program Name: dotemplate.ado
 Author:		  Andres Castaneda
@@ -7,6 +8,7 @@ Dependencies: The World Bank - LCSPP
 ---------------------------------------------------------------------------
 Creation Date: 		December 18, 2013
 Modification Date:	January 07, 2013
+					December 22, 2015
 version:			01
 References:	
 Output:		dotemplate.ado
@@ -29,17 +31,18 @@ syntax , [ File(string) 						/// Name of the do-file
            replace								/// replace
            ]
   
-version 10.0
-
+version 10
 *================================
 * Section 1: create locals
 *===============================
 
 * 1.1: Default locals
 
+
 * type of template
 if ("`type'" == "") {
-	disp in y  "Type of template: " _n in smcl "({ul:B}asic or {ul:C}omplete)" _request(_type)
+	disp in y  "Type of template: " _n in smcl ///
+		"({ul:B}asic or {ul:C}omplete)" _request(_type)
 	if ("`type'" == "" | regexm("`type'", "^[Cc]")) local type "complete"
 	if (regexm("`type'", "^[Bb]")) local type "basic"
 }
@@ -60,7 +63,9 @@ if ("`author'" == "") {
 }
 
 * Dependencies
-if ("`depend'" == "" & "`type'" == "complete" ) disp in y  "Institution/s working in the project:" _request(_depend)
+if ("`depend'" == "" & "`type'" == "complete" ) {
+	disp in y  "Institution/s working in the project:" _request(_depend)
+}
 
 
 
@@ -77,22 +82,28 @@ if ("`steps'" == "" & "`type'" == "complete" ) {
 }
 
 * Output
-if ("`output'" == "" & "`type'" == "complete") disp in y  "Expected output from the do-file:" _n ///
+if ("`output'" == "" & "`type'" == "complete") disp in y  ///
+	"Expected output from the do-file:" _n ///
 	"(Ex: Excel file, database, etc.)" _request(_output)
 
 
 * Path
 if ("`path'" == "") {
-	disp in y  "Directory path to place do-file" _n "(current directory is default):" _request(_path)
+	disp in y  "Directory path to place do-file" _n   ///
+		"(current directory is default):" _request(_path)
 	if (`"`path'"' == `""') local path = "`c(pwd)'"
 }
 
 * Directories
-if ("`directory'" == "" & "`type'" == "complete") disp in y  "Global macros for directories paths:" _request(_directory)
+if ("`directory'" == "" & "`type'" == "complete") disp in y  ///
+	"Global macros for directories paths:" _request(_directory)
 
 
 * log
-if ("`log'" == "") disp in y  "Do you want to create a log-file in your template? Y/N" _request(_log)
+if ("`log'" == "") {
+	disp in y  "Do you want to create a log-file in your template? Y/N" ///
+		_request(_log)
+}
 
 
 
@@ -114,7 +125,7 @@ if (inlist("`log'", "log", "Y")) {						// if log file is desired
 	file write `do' `"log using "`path'/`file'.txt", replace text"' _n  
 }
 
-file write `do' `"/*==========================================================================="' _n 
+file write `do' `"/*"' _dup(68) `"="' _n 
 file write `do' `"project:"'  _col(16) `"`project'"' _n 			
 file write `do' `"Author: "'  _col(16) `"`author' "' _n  		
 *file write `do' `"Program Name: `file'.do"' _n 
@@ -122,8 +133,10 @@ file write `do' `"Author: "'  _col(16) `"`author' "' _n
 * dependencies is not a "must"
 if ("`type'" != "basic") file write `do' `"Dependencies:"' _col(16) `"`depend'"' _n  
 
-file write `do' `"---------------------------------------------------------------------------"' _n  
-file write `do' `"Creation Date:"' _col(18) `"`: di %tdMonth_dd,_CCYY date("$S_DATE", "DMY")' "' _n  
+file write `do' _dup(70) `"-"' _n  
+file write `do' `"Creation Date:"' _col(18) ///
+	`" `c(current_date)' - `c(current_time)'"' _n  
+* `"`: di %tdMonth_dd,_CCYY date("$S_DATE", "DMY")' "' _n  
 
 if ("`type'" != "basic") {					// No basic template
 	file write `do' `"Modification Date:"' _col(21) `" "' _n  			
@@ -131,18 +144,18 @@ if ("`type'" != "basic") {					// No basic template
 	file write `do' `"References:"' _col(21) `" "' _n  		
 	file write `do' `"Output:"' _col(21) `"`output'"' _n 	
 }
-file write `do' `"===========================================================================*/"' _n  
+file write `do' _dup(68) `"="' `"*/"' _n 
 
 
 * 2.2 Page set up
 file write `do' `""' _n  
-file write `do' `"/*"' _dup(95) "=" _n  
-file write `do' _col(35) `"0: Program set up"' _n  		
-file write `do' _dup(95) "=" `"*/"' _n 	
+file write `do' `"/*"' _dup(68) "=" _n  
+file write `do' _col(25) `"0: Program set up"' _n  		
+file write `do' _dup(68) "=" `"*/"' _n 	
 
 * Directories of dta, do-files and excel files
 if ("`type'" != "basic") {
-	file write `do' `"version `c(version)'"' _n  	
+	file write `do' `"version `c(stata_version)'"' _n  	
 	file write `do' `"drop _all"' _n  				
 }
 
@@ -162,15 +175,15 @@ file write `do' `""' _n
 *2.3 Sections
 if ( "`type'" == "complete" ) {
 	foreach section of numlist 1/`sections' {
-		file write `do' `"/*"' _dup(95) "=" _n 	
-		file write `do' _col(35) `"`section': <Describe>"' _n  		
-		file write `do' _dup(95) "=" `"*/"' _n 	
+		file write `do' `"/*"' _dup(68) "=" _n 	
+		file write `do' _col(25) `"`section': "' _n  		
+		file write `do' _dup(68) "=" `"*/"' _n 	
 		file write `do' `""' _n    
 		file write `do' `""' _n 
 		
 		if (`steps' > 1) {
 			foreach step of numlist 1/`steps' {
-				file write `do' `"*"' _dup(36) "-" `"`section'.`step': <Describe> "' _dup(36) "-" _n  
+				file write `do' `"*"' _dup(20) "-" `"`section'.`step':"'  _n  
 				file write `do' `""' _n
 				file write `do' `""' _n 
 			}
@@ -191,7 +204,7 @@ if (inlist("`log'", "log", "Y")) file write `do' `"log close"' _n
 file write `do' `"exit"' _n  
 file write `do' `"/* End of do-file */"' _n
 file write `do' `""' _n  
-file write `do' ">" _dup(50) "<>" "<" _n  
+file write `do' ">" _dup(39) "<>" "<" _n  
 
 if ("`type'" != "basic") {
 	file write `do' `""' _n  
@@ -213,15 +226,18 @@ if ("`type'" != "basic") {
 file close `do'
 cap confirm new file "`path'/`file'.do"
 if _rc {
-	cap window stopbox rusure `"The file "`path'/`file'.do" "' "already exists." "Do you want to replace it?"
+	cap window stopbox rusure `"The file "`path'/`file'.do" "' ///
+		"already exists." "Do you want to replace it?"
 	if (_rc == 0) copy `dofile' "`path'/`file'.do", replace
 	else exit
-	di as txt "Click" as smcl `"{browse `""`path'/`file'.do""': here }"' `"to open template "`file'.do" with your default software"'
+	di as txt "Click" as smcl `"{browse `""`path'/`file'.do""': here }"' ///
+		`"to open template "`file'.do" with your default software"'
 }
 
 else {
 	copy `dofile' "`path'/`file'.do"
-	di as txt "Click" as smcl `"{browse `""`path'/`file'.do""': here }"' `"to open template "`file'.do" with your default software"'
+	di as txt "Click" as smcl `"{browse `""`path'/`file'.do""': here }"' ///
+		`"to open template "`file'.do" with your default software"'
 }
 
 end
