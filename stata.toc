@@ -1,0 +1,7 @@
+v 3
+d Materials by R.Andres Castaneda
+d 
+d 
+d 
+ 
+p dotemplate
