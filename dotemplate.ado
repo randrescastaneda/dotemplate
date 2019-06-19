@@ -20,105 +20,48 @@ cap program drop dotemplate
 program define dotemplate
 
 syntax , [ File(string)              /// Name of the do-file
-Path(string)              /// directory path where do-file will be placed
-TYpe(string)              /// Type of template to create. Default 
-AUThor(string)            /// Author name
-DEPend(string)            /// institutions/s working for in the project
-PROject(string)           /// Objective of the do-file
-OUTput(string)            /// list of files produced with the do-file
-DIRectory(string)         /// list of files produced with the do-file
-SECtions(string)          /// Number of sections in do-file
-STEPs(string)             /// number of steps with sections
-log                       /// produced log file with the same name as the do-file
-replace                   /// replace
-ADO                       /// ado or do
+           Path(string)              /// directory path where do-file will be placed
+           TYpe(string)              /// Type of template to create. Default 
+           AUThor(string)            /// Author name
+           DEPend(string)            /// institutions/s working for in the project
+           PROject(string)           /// Objective of the do-file
+           OUTput(string)            /// list of files produced with the do-file
+           DIRectory(string)         /// list of files produced with the do-file
+           SECtions(integer 3)       /// Number of sections in do-file
+           STEPs(integer 1)          /// number of steps with sections
+           log                       /// produced log file with the same name as the do-file
+           replace                   /// replace
+           ADOfile                   /// ado or do
 ]
 
 version 12
 *================================
 * Section 1: create locals
 *===============================
+if ("`0'" == "") {
+	db dotemplate
+	exit
+}
 
 * 1.1: Default locals
 
-
 * type of template
-if ("`type'" == "") {
-	disp in y  "Style of template: " _n in smcl ///
-	"({ul:B}asic or {ul:C}omplete)" _request(_type)
-	if ("`type'" == "" | regexm("`type'", "^[Cc]")) local type "complete"
-	if (regexm("`type'", "^[Bb]")) local type "basic"
+if ("`type'" == "" | regexm("`type'", "^[Cc]")) local type "complete"
+if (regexm("`type'", "^[Bb]")) local type "basic"
+
+
+if ("`adofile'" == "" | regexm("`adofile'", "^[Dd]")) local ado "do"
+else if (regexm("`adofile'", "^[Aa]")) local ado "ado"
+else {
+	noi disp as err "you must pick between ado-file or do-file"
+	error
 }
-
-if ("`ado'" == "") {
-	disp in y  "Format of file: " _n in smcl ///
-	"({ul:a}do-file or {ul:d}o-file)" _request(_ado)
-	if ("`ado'" == "" | regexm("`ado'", "^[Dd]")) local ado "do"
-	else if (regexm("`ado'", "^[Aa]")) local ado "ado"
-	else {
-		noi disp as err "you must pick between ado-file or do-file"
-		error
-	}
-}
-
-* Project
-if ("`project'" == "") disp in y  "Objective of the project:" _request(_project)
-
-* name
-if ("`file'" == "") {
-	disp in y  "Name of `ado'-file:" _request(_file)
-	if ("`file'" == "") local file "dofile1"
-}
-
-* Author
-if ("`author'" == "") {
-	disp in y  "Author Name:" _request(_author)
-	if ("`author'" == "") local author = "`c(username)'"
-}
-
-* Dependencies
-if ("`depend'" == "" & "`type'" == "complete" ) {
-	disp in y  "Institution/s working in the project:" _request(_depend)
-}
-
-
-* sections
-if ("`sections'" == "" & "`type'" == "complete" ) {
-	disp in y  "Estimated number of sections:" _request(_sections)
-	if ("`sections'" == "") local sections = 3
-}
-
-* steps
-if ("`steps'" == "" & "`type'" == "complete" ) {
-	disp in y  "Estimated number of sub-sections:" _request(_steps)
-	if ("`steps'" == "") local steps = 1
-}
-
-* Output
-if ("`output'" == "" & "`type'" == "complete") disp in y  ///
-"Expected output from the do-file:" _n ///
-"(Ex: Excel file, database, etc.)" _request(_output)
 
 
 * Path
-if ("`path'" == "") {
-	disp in y  "Directory path to place do-file" _n   ///
-	"(current directory is default):" _request(_path)
-	if (`"`path'"' == `""') local path = "`c(pwd)'"
-}
+if ("`path'" == "") local path = "`c(pwd)'"
 
-* Directories
-if ("`directory'" == "" & "`type'" == "complete") disp in y  ///
-"Global macros for directories paths:" _request(_directory)
-
-
-* log
-if ("`log'" == "") {
-	disp in y  "Do you want to create a log-file in your template? Y/N" ///
-	_request(_log)
-}
-
-
+if ("`author'" == "") local author "`c(username)'"
 
 * 1.2: Temporal files and names
 

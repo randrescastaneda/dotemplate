@@ -1,6 +1,10 @@
 v 3
-d 'DOTEMPLATE'
+d 'DOTEMPLATE': Create template for do-files or ado-files
 d 
-d Distribution-Date: 20feb2019
+d Distribution-Date: 19jun2019
 d License: MIT
 d 
+F dotemplate.ado
+F dotemplate.dlg
+F dotemplate.sthlp
+

@@ -1,7 +1,7 @@
 v 3
-d Materials by R.Andres Castaneda
+d Materials by R.Andrés Castañeda
+d The World Bank
 d 
-d 
-d 
+d dotemplate Creates template for do-files. Two different type of template are provided. dotemplate is useful for being organized as programmer and standardize do-files among a team or group of programmers. If any of the options above is not specified, dotemplate will request for them. The user could press Enter from the keyboard if no information is desired to be prompted, or type in the Stata commands window the specific information.
  
 p dotemplate
