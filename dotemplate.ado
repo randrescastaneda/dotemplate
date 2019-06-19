@@ -38,6 +38,10 @@ version 12
 *================================
 * Section 1: create locals
 *===============================
+if ("`0'" == "") {
+	db dotemplate
+	exit
+}
 
 * 1.1: Default locals
 
