@@ -1,148 +1,73 @@
 * developed by E. F. Haghish - 2018
 
-VERSION 12
+VERSION 14
 POSITION . . 400 475
 
-// Specify package license
-//      https://help.github.com/articles/licensing-a-repository/
-LIST license_list
+LIST file_ext
 BEGIN
 	select
-	Academic Free License v3.0
-	Apache license 2.0
-	Artistic license 2.0
-	Boost Software License 1.0
-	BSD 2-clause "Simplified" license
-	BSD 3-clause "New" or "Revised" license
-	BSD 3-clause Clear license
-	Creative Commons license family
-	Creative Commons Zero v1.0 Universal
-	Creative Commons Attribution 4.0
-	Creative Commons Attribution Share Alike 4.0
-	Do What The F*ck You Want To Public License
-	Educational Community License v2.0
-	Eclipse Public License 1.0
-	European Union Public License 1.1
-	GNU Affero General Public License v3.0
-	GNU General Public License family
-	GNU General Public License v2.0
-	GNU General Public License v3.0
-	GNU Lesser General Public License family
-	GNU Lesser General Public License v2.1
-	GNU Lesser General Public License v3.0
-	ISC
-	LaTeX Project Public License v1.3c
-	Microsoft Public License
-	MIT
-	Mozilla Public License 2.0
-	Open Software License 3.0
-	PostgreSQL License
-	SIL Open Font License 1.1
-	University of Illinois/NCSA Open Source License
-	The Unlicense
-	zLib License
+	ado-file
+	do-file
+END
+
+LIST file_style
+BEGIN
+	select
+	Basic
+	Complete
 END
 
 
-DIALOG make, label("make") 
-BEGIN
+DIALOG make, label("dotemplate - Create template for Stata files") 
+BEGIN				 
+	// select installable files
+	TEXT tx_doinfo  10  20  . ., label("file information")
+	
+	// Type of file
+	TEXT tx_fext  10   +20  . 290, label("File ext*")
+	COMBOBOX cm_ext  100    @  70  .  , dropdownlist contents(file_ext)
+	
+	// Style of file
+	TEXT tx_fstyle  10   +25  . 290, label("Style*")
+	COMBOBOX cm_style  100    @  70  .  , dropdownlist contents(file_style)
 
-	// toc
-	CHECKBOX toc  10  10   @   .  , option(toc) default(1) ///
-	         label("create stata.toc") 
-	// pkg
-	CHECKBOX pkg  10    +20   @   .  , option(pkg) default(1) ///
-	         label("create packagename.pkg") 
+	// Name of the file
+	TEXT tx_name 10 +25 . ., label("file name*")
+	EDIT name    100 @ 290 19 , default("")
 	
-	// make
-	CHECKBOX make  10    +20   @   .  , option(make) default(1) ///
-	         label("create make.do") 
-			 
-	// readme
-	CHECKBOX readme  10    +20   @   .  , option(readme) default(0) ///
-	         label("create README.md") 
+	// Objective of the document
+	TEXT tx_obj 10 +20 . ., label("Objective")
+	EDIT objective    100 @ 290 19, default("")
 	
-	
-	// replace
-	CHECKBOX replace  10    +20   @   .  , option(replace) default(0) ///
-	         label("replace files, if existing") 
-					 
-	
-	// select installable files
-	TEXT tx_pkginfo  10   +40  . ., label("Package information")
-	
-	// title of the document
-	TEXT tx_name 10 +20 . ., label("pkg name*")
-	EDIT name    80 @ 310 19 , default("")
-	
-	// title of the document
-	TEXT tx_title 10 +20 . ., label("short title*")
-	EDIT title    80 @ 310 19, default("")
-	
-	// verrsion
-	TEXT tx_version  10   +20  . 310, label("version*")
-	EDIT version     80   @    310  19  , default("")
-	
-	// Description
-	TEXT tx_description  10   +20  . 310, label("description")
-	EDIT description     80   @    310  19  , default("")
-	
-	// License
-	TEXT tx_license  10   +20  . 310, label("license*")
-	COMBOBOX license  80    @  70  .  , dropdownlist contents(license_list)
-	
-	
-	// select installable files
+	// Number of seciton
+	TEXT tx_sec 10 +20 . ., label("# sections")
+	EDIT section    100 @ 290 19, default("")
+
+	// Number of subsections
+	TEXT tx_sub 10 +20 . ., label("# subsections")
+	EDIT subsection    100 @ 290 19, default("")
+
+	// Author information
 	TEXT tx_autinfo  10   +40  . ., label("Author information")
 	
 	// Author of the document
 	TEXT tx_author 10 +20 . +59, label("author*")
-	EDIT author 80 @ 310 19  
+	EDIT author 100 @ 290 19  
 	
 	// E-mail
 	TEXT tx_email 10 +20 . ., label("e-mail*")
-	EDIT email 80 @ 310 19  
+	EDIT email 100 @ 290 19  
 	 
 	// Affiliation
 	TEXT tx_affiliation 10 +20 . ., label("affiliation")
-	EDIT affiliation 80 @ 310 19   
+	EDIT affiliation 100 @ 290 19   
 	 
 	// URL
 	TEXT tx_url 10 +20 . ., label("url link")
-	EDIT url 80 @ 310 19  
-	
-	
-	 
-	
-	// select the path to the directory
-	/*
-	TEXT tx_repoinfo  10   +40  . ., label("Specify the path to the package repository")
-	TEXT tx0 10 +20 . ., label("repository*")
-	FILE path	 80 @  310  .  , error("path should be specified")  ///
-	      label(Browse...) ///
-	      tooltip("select the path to the package directory. for example, this can be the GitHub repository you are intending to upload") direct ///
-	      onchange("script mainReset")
-	*/
-		  
-		  
-	// select installable files
-	TEXT tx_summary3  10   +40  . 310, label("select installation and/or ancillary files*  (hold CTRL/CMD key)")
-	
-	TEXT tx_summary4  10   +20  . 310, label("installation")
-	FILE ffile	 80 @  310  .  , error("Open file")  ///
-	      label("select") ///
-	      tooltip("select the installation files. hold CTRL key for selecting multiple files") multiselect ///
-	      onchange("script mainReset") 
-		  
-	// select installable files
-	TEXT tx_summary5  10   +20  . 310, label("ancillary")
-	FILE axfile	 80 @  310  .  , error("Open file")  ///
-	      label("select") ///
-	      tooltip("select the ancillary files. hold CTRL key for selecting multiple files") multiselect ///
-	      onchange("script mainReset") 
+	EDIT url 100 @ 290 19  
 	
 	// required
-	TEXT tx_required  10   +40  . 310, label("* stared items are required")
+	TEXT tx_required  10   +40  . 290, label("* stared items are required")
 	
 END
 
