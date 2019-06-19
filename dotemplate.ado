@@ -45,14 +45,9 @@ if ("`0'" == "") {
 
 * 1.1: Default locals
 
-
 * type of template
-if ("`type'" == "") {
-	disp in y  "Style of template: " _n in smcl ///
-	"({ul:B}asic or {ul:C}omplete)" _request(_type)
-	if ("`type'" == "" | regexm("`type'", "^[Cc]")) local type "complete"
-	if (regexm("`type'", "^[Bb]")) local type "basic"
-}
+if ("`type'" == "" | regexm("`type'", "^[Cc]")) local type "complete"
+if (regexm("`type'", "^[Bb]")) local type "basic"
 
 
 if ("`adofile'" == "" | regexm("`adofile'", "^[Dd]")) local ado "do"
@@ -63,15 +58,10 @@ else {
 }
 
 
-* Output
-if ("`output'" == "" & "`type'" == "complete") disp in y  ///
-"Expected output from the do-file:" _n ///
-"(Ex: Excel file, database, etc.)" _request(_output)
-
-
 * Path
 if ("`path'" == "") local path = "`c(pwd)'"
 
+if ("`author'" == "") local author "`c(username)'"
 
 * 1.2: Temporal files and names
 

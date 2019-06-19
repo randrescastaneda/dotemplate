@@ -5,16 +5,14 @@ POSITION . . 400 420
 
 LIST file_ext
 BEGIN
-	select
-	ado-file
 	do-file
+	ado-file
 END
 
 LIST file_style
 BEGIN
-	select
-	Basic
 	Complete
+	Basic
 END
 
 
@@ -29,13 +27,13 @@ BEGIN
 	TEXT tx_doinfo  10  10  . ., label("File information")
 	
 	// Type of file
-	TEXT tx_fext  10   +20  . 290, label("File ext*")
-	COMBOBOX adofile  100    @  70  .  , dropdownlist /* 
+	TEXT tx_fext  10   +20  . 290, label("File ext")
+	COMBOBOX adofile  100    @  85  .  , dropdownlist /* 
 	 */ contents(file_ext)
 	
 	// Style of file
-	TEXT tx_fstyle  10   +25  . 290, label("Style*")
-	COMBOBOX type  100    @  70  .  , dropdownlist /* 
+	TEXT tx_fstyle  10   +25  . 290, label("Style")
+	COMBOBOX type  100    @  85  .  , dropdownlist /* 
 	 */ contents(file_style) option(type)
 
 	// Name of the file
@@ -67,7 +65,7 @@ BEGIN
 	TEXT tx_autinfo  10   +30  . ., label("Author information")
 	
 	// Author of the document
-	TEXT tx_author 10 +20 . +59, label("Author*")
+	TEXT tx_author 10 +20 . +59, label("Author")
 	EDIT author 100 @ 290 19, option(author)  
 	
 	// E-mail
@@ -108,14 +106,19 @@ RESET res1
 COPY copy1
 
 
-
-
-
 // ---------------------------------------------------------
 // MAKE COMMAND
 // =========================================================
 PROGRAM command
 BEGIN
+	
+	// checks
+	if (!d.file | d.file.iseq("")) {
+		stopbox stop "Name of the file is required"
+	}
+	
+	
+	
  put "dotemplate"
  put ", "
      	optionarg d.type
