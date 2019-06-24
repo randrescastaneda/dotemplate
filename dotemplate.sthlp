@@ -7,7 +7,7 @@
 {viewerjumpto "Remarks" "dotemplate##remarks"}{...}
 {viewerjumpto "Examples" "dotemplate##examples"}{...}
 {hline}
-help for {cmd:dotemplate}{right:Andres Castaneda}
+help for {cmd:dotemplate}{right:R.Andrés Castañeda}
 {hline}
 
 {phang}
@@ -15,10 +15,24 @@ help for {cmd:dotemplate}{right:Andres Castaneda}
 
 {marker syntax}{...}
 {title:Syntax}
+
+{phang}
+Using dialog box
+
+{p 8 17 2}{cmdab:dotemplate}{p_end}
+
+{phang}
+Using Stata regular syntax
+
 {p 8 17 2}
 {cmdab:dotemplate}
-[{cmd:,}
+{cmd:,} {it:file(string)} [
 {it:options}]
+
+{phang}
+{err:Note}: I highly recommend using the dialog box syntax rather than the regular 
+Stata syntax. Just type {cmd:dotemplate} in Stata and fill up the fields. The only 
+mandatory options if {it:file(string)} to provide the name of the file. 
 
 {marker sections}{...}
 {title:Sections}
