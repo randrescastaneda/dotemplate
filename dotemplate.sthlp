@@ -143,11 +143,21 @@ specified. type(complete) is not necessary since it is the default option. {help
 {col 10}log
 
 {title:Author}
-{p}
 
-Andres Castaneda, The World Bank-LCSPP
+{p 6 6 4}{cmd:R.Andrés Castañeda}{p_end}
+{p 6 6 4}Development Economics, Data Group | 
+{browse "http://iresearch.worldbank.org/PovcalNet/home.aspx":PovcalNet Team}{p_end}
+{p 6 6 4}The World Bank|1818 H St. N.W., Washington, D.C. 20433{p_end}
+{p 6 6 4}Email: {browse "acastanedaa@worldbank.org":   acastanedaa@worldbank.org}{p_end}
+{p 6 6 4}GitHub:{browse "https://github.com/randrescastaneda":  randrescastaneda }{p_end}
+{p 6 6 4}Website:{browse "https://randrescastaneda.rbind.io/": randrescastaneda.rbind.io }{p_end}
 
-Email {browse "mailto:acastanedaa@worldbank.org":acastanedaa@worldbank.org}
+{title:Source}
+
+{phang}
+you may find the source code in the Github repository 
+{browse "https://github.com/randrescastaneda/dotemplate":/randrescastaneda/dotemplate }
+
 
 {hline}
 

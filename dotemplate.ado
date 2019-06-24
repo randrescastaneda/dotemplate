@@ -27,6 +27,8 @@ syntax , [ File(string)              /// Name of the do-file
            PROject(string)           /// Objective of the do-file
            OUTput(string)            /// list of files produced with the do-file
            DIRectory(string)         /// list of files produced with the do-file
+           email(string)             /// list of files produced with the do-file
+           url(string)               /// list of files produced with the do-file
            SECtions(integer 3)       /// Number of sections in do-file
            STEPs(integer 1)          /// number of steps with sections
            log                       /// produced log file with the same name as the do-file
@@ -34,7 +36,7 @@ syntax , [ File(string)              /// Name of the do-file
            ADOfile                   /// ado or do
 ]
 
-version 12
+version 13
 *================================
 * Section 1: create locals
 *===============================
@@ -84,6 +86,11 @@ if (inlist("`log'", "log", "Y")) {						// if log file is desired
 file write `do' `"/*"' _dup(50) `"="' _n 
 file write `do' `"project:"'  _col(16) `"`project'"' _n 			
 file write `do' `"Author: "'  _col(16) `"`author' "' _n  		
+if ("`type'" != "basic") {					// No basic template
+	file write `do' `"E-email:"' _col(16) `"`email'"' _n 
+	file write `do' `"url:"' _col(16) `"`url'"' _n 
+}
+
 *file write `do' `"Program Name: `file'.do"' _n 
 
 * dependencies is not a "must"
@@ -106,7 +113,7 @@ file write `do' _dup(50) `"="' `"*/"' _n
 * 2.2 Page set up
 file write `do' `""' _n  
 file write `do' `"/*"' _dup(50) "=" _n  
-file write `do' _col(25) `"0: Program set up"' _n  		
+file write `do' _col(15) `"0: Program set up"' _n  		
 file write `do' _dup(50) "=" `"*/"' _n 	
 
 if ("`ado'" == "ado") {
@@ -192,7 +199,7 @@ if ("`type'" != "basic") {
 
 file close `do'
 cap confirm new file "`path'/`file'.`ado'"
-if _rc {
+if (_rc & "`replace'" == "") {
 	cap window stopbox rusure `"The file "`path'/`file'.`ado'" "' ///
 	"already exists." "Do you want to replace it?"
 	if (_rc == 0) copy `dofile' "`path'/`file'.`ado'", replace
@@ -202,7 +209,7 @@ if _rc {
 }
 
 else {
-	copy `dofile' "`path'/`file'.`ado'"
+	copy `dofile' "`path'/`file'.`ado'", replace
 	di as txt "Click" as smcl `"{browse `""`path'/`file'.`ado'""': here }"' ///
 	`"to open template "`file'.`ado'" with your default software"'
 }

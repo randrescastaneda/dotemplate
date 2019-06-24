@@ -70,7 +70,7 @@ BEGIN
 	
 	// E-mail
 	TEXT tx_email 10 +20 . ., label("e-mail")
-	EDIT email 100 @ 290 19
+	EDIT email 100 @ 290 19, option(email)
 	 
 	// Affiliation
 	TEXT tx_affiliation 10 +20 . ., label("Affiliation")
@@ -78,7 +78,7 @@ BEGIN
 	 
 	// URL
 	TEXT tx_url 10 +20 . ., label("url link")
-	EDIT url 100 @ 290 19  
+	EDIT url 100 @ 290 19  , option(url)
 		
 		
 	//---------------------
@@ -129,6 +129,8 @@ BEGIN
 			optionarg d.path
 			optionarg d.author
 			optionarg d.depend
+			optionarg d.email
+			optionarg d.url
 			option d.log
 			option d.replace
   
